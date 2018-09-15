@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="
+	   		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+    <!--  包扫描   数据库连接池   事务管理   spring与mybatis的整合 -->
+
+
+    <context:component-scan base-package="com.fgm.weblog.service"/>
+
+
+    <!--  数据库连接池,一般应提取到配置文件中,这里仅为测试案例 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/web_log_view?characterEncoding=utf-8"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="123"></property>
+     </bean>
+
+<!--  事务管理-->
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+<!--  使用注解的方式来声明我们的事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+
+
+
+
+    <!-- 与mybatis的整合 -->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 配置我们每个数据表对应的xml存放的位置 -->
+        <property name="mapperLocations" value="classpath:mappers/*.xml"></property>
+
+        <!-- 配置我们mybatis核心配置文件的路径 -->
+        <property name="configLocation" value="classpath:mybatis/sqlMapConfig.xml"></property>
+    </bean>
+
+
+
+    <!--  扫描某一个包下面的所有的接口，批量的为其生成代理类
+    mybatis里面只需要声明一个接口，不需要声明一个实现类
+    -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.fgm.weblog.dao"></property>
+
+    </bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</beans>
